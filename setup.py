@@ -4,7 +4,7 @@ from __future__ import with_statement
 from setuptools import setup
 
 
-def get_version(fname='mccabe.py'):
+def get_version(fname='jones_complexity.py'):
     with open(fname) as f:
         for line in f:
             if line.startswith('__version__'):
@@ -18,24 +18,24 @@ def get_long_description():
             descr.append(f.read())
     return '\n\n'.join(descr)
 
-
 setup(
     name='jones-complexity',
     version=get_version(),
     description="Jones Complexity checker, plugin for flake8",
     long_description=get_long_description(),
-    keywords='flake8 mccabe',
-    author='Tarek Ziade',
-    author_email='tarek@ziade.org',
-    url='https://github.com/pycqa/mccabe',
+    keywords='flake8',
+    author='Rich Jones',
+    author_email='rich@openwatch.net',
+    url='https://github.com/Miserlou/JonesComplexity',
     license='Expat license',
-    py_modules=['mccabe'],
+    py_modules=['jones_complexity'],
     zip_safe=False,
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    setup_requires=['nose'],
+    tests_require=['nose'],
     entry_points={
         'flake8.extension': [
-            'C90 = jones_complexity:JonesComplexityChecker',
+            'J901 = jones_complexity:JonesComplexityChecker',
+            'J902 = jones_complexity:JonesComplexityChecker',
         ],
     },
     classifiers=[

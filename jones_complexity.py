@@ -19,8 +19,7 @@ try:
 except ImportError:   # Python 2.5
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.0.1'
-
+__version__ = '0.1.0'
 
 class LineComplexityVisitor(ast.NodeVisitor):
     """
@@ -45,7 +44,7 @@ class LineComplexityVisitor(ast.NodeVisitor):
         Return a sorted list of line:nodes.
         """
         od = sorted_x = OrderedDict(sorted(self.count.items(), key=itemgetter(1), reverse=True))
-        return json.dumps(od, indent=4)
+        return od
 
     def score(self):
         """
@@ -73,9 +72,15 @@ class JonesComplexityChecker(object):
     """Jones complexity checker."""
     name = 'jones'
     version = __version__
-    _code = 'C987'
-    _error_tmpl = "C987 %r is too complex (%d)"
+
+    _line_code = 'J901'
+    _line_error_tmpl = "J901 Line %r is too complex (%d)"
+
+    _score_code = 'J902'
+    _score_error_tmpl = "J902 Overall Jones score is too complex (%s)"
+
     max_line_complexity = 0
+    max_jones_score = 0
 
     def __init__(self, tree, filename):
         self.tree = tree
@@ -84,24 +89,55 @@ class JonesComplexityChecker(object):
     def add_options(cls, parser):
         parser.add_option('--max-line-complexity', default=-1, action='store',
                           type='int', help="Per line complexity threshold")
+        parser.add_option('--max-jones-score', default=-1, action='store',
+                          type='int', help="Total score threshold")
         parser.config_options.append('max-line-complexity')
+        parser.config_options.append('max-jones-score')
 
     @classmethod
     def parse_options(cls, options):
         cls.max_line_complexity = int(options.max_line_complexity)
+        cls.max_jones_score = int(options.max_jones_score)
 
     def run(self):
-        if self.max_complexity < 0:
+        if self.max_line_complexity < 0 or self.max_jones_score < 0:
             return
+
         visitor = LineComplexityVisitor()
-        visitor.preorder(self.tree, visitor)
+        visitor.visit(self.tree)
 
-        for graph in visitor.graphs.values():
+        sorted_items = visitor.sort()
+        total_score = visitor.score()
 
-            if graph.complexity() > self.max_line_complexity:
-                text = self._error_tmpl % (graph.entity, graph.complexity())
-                yield graph.lineno, 0, text, type(self)
+        for line, score in sorted_items.iteritems():
 
+            if score > self.max_line_complexity:
+                text = self._line_error_tmpl % (int(line), int(score))
+                yield line, 0, text, type(self)     
+
+        if total_score > self.max_jones_score:
+            text = self._score_error_tmpl % (total_score)
+            yield 0, 0, text, type(self)
+
+def get_code_complexity(code, max_line_complexity=15, max_jones_score=10, filename='stdin'):
+    try:
+        tree = compile(code, filename, "exec", ast.PyCF_ONLY_AST)
+    except SyntaxError:
+        e = sys.exc_info()[1]
+        sys.stderr.write("Unable to parse %s: %s\n" % (filename, e))
+        return 0
+
+    complx = []
+
+    checker = JonesComplexityChecker(tree, filename)
+    checker.max_line_complexity = max_line_complexity
+    checker.max_jones_score = max_jones_score
+
+    for lineno, offset, text, check in checker.run():
+        complx.append('%s:%d:1: %s' % (filename, int(lineno), text))
+
+    print('\n'.join(complx))
+    return complx
 
 def main(argv=None):
     if argv is None:
@@ -124,7 +160,7 @@ def main(argv=None):
     score = visitor.score()
 
     print("Line counts:")
-    print(sorted_items)
+    print(json.dumps(sorted_items, indent=4))
 
     print("Jones Score:")
     print(score)
