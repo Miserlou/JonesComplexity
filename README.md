@@ -31,3 +31,39 @@ if first_name == 'Alice':
 ```
 
 Shamelessly named after myself, in the tradition of McCabe and Halstead.
+
+### Examples
+
+Itself:
+
+    $ python jones_complexity.py jones_complexity.py
+    Line counts:
+    {
+        "39": 19, 
+        "46": 15, 
+        "137": 12, 
+        "115": 12, 
+        [...]
+        "18": 1, 
+        "9": 1, 
+        "148": 1
+    }
+    Jones Score:
+    4.0
+
+[PyEsprima](https://raw.githubusercontent.com/PiotrDabkowski/Js2Py/master/examples/pyesprima.py):
+
+    $ p jones_complexity.py pyesprima.py 
+    Line counts:
+    {
+        "4182": 265, 
+        "3688": 190, 
+        "4186": 189, 
+        "48": 189, 
+        "4181": 164, 
+        [...]
+        "1201": 1, 
+        "3728": 1
+    }
+    Jones Score:
+    9.0
