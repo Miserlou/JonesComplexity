@@ -1,5 +1,6 @@
 """ 
     Per-Line Complexity Metrics
+    Based on https://github.com/PyCQA
     MIT License.
 """
 from __future__ import with_statement
@@ -30,25 +31,25 @@ class LineComplexityVisitor(ast.NodeVisitor):
         return json.dumps(od, indent=4)
 
 class JonesComplexityChecker(object):
-    """McCabe cyclomatic complexity checker."""
-    name = 'mccabe'
+    """Jones complexity checker."""
+    name = 'jones'
     version = __version__
     _code = 'C901'
     _error_tmpl = "C901 %r is too complex (%d)"
-    max_complexity = 0
+    max_line_complexity = 0
 
     def __init__(self, tree, filename):
         self.tree = tree
 
     @classmethod
     def add_options(cls, parser):
-        parser.add_option('--max-complexity', default=-1, action='store',
-                          type='int', help="McCabe complexity threshold")
-        parser.config_options.append('max-complexity')
+        parser.add_option('--max-line-complexity', default=-1, action='store',
+                          type='int', help="Per line complexity threshold")
+        parser.config_options.append('max-line-complexity')
 
     @classmethod
     def parse_options(cls, options):
-        cls.max_complexity = int(options.max_complexity)
+        cls.max_line_complexity = int(options.max_line_complexity)
 
     def run(self):
         if self.max_complexity < 0:
@@ -58,7 +59,7 @@ class JonesComplexityChecker(object):
 
         for graph in visitor.graphs.values():
 
-            if graph.complexity() > self.max_complexity:
+            if graph.complexity() > self.max_line_complexity:
                 text = self._error_tmpl % (graph.entity, graph.complexity())
                 yield graph.lineno, 0, text, type(self)
 
@@ -67,8 +68,6 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     opar = optparse.OptionParser()
-    opar.add_option("-d", "--dot", dest="dot",
-                    help="output a graphviz dot file", action="store_true")
     opar.add_option("-m", "--min", dest="threshold",
                     help="minimum complexity for output", type="int",
                     default=1)
