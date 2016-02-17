@@ -12,7 +12,7 @@ Flake8 extension to calculate per-line complexity and total code density.
 
 ## Usage (flake8)
 
-    $ flake8 --max-line-compexity 15 --max-jones-score 8 yourproject
+    $ flake8 --max-line-complexity 15 --max-jones-score 8 yourproject
 
 ## What is this?
 
