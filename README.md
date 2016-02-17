@@ -1,4 +1,4 @@
-# JonesComplexity
+# JonesComplexity [![Build Status](https://travis-ci.org/Miserlou/JonesComplexity.svg)](https://travis-ci.org/Miserlou/JonesComplexity)
 
 Flake8 extension to calculate per-line complexity and total code density.
 
