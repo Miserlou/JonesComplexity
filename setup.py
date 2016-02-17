@@ -34,7 +34,6 @@ setup(
     entry_points={
         'flake8.extension': [
             'J901 = jones_complexity:JonesComplexityChecker',
-            'J902 = jones_complexity:JonesComplexityChecker',
         ],
     },
     classifiers=[

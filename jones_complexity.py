@@ -19,7 +19,7 @@ try:
 except ImportError:   # Python 2.5
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 class LineComplexityVisitor(ast.NodeVisitor):
     """
