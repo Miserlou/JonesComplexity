@@ -19,7 +19,7 @@ try:
 except ImportError:   # Python 2.5
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 class LineComplexityVisitor(ast.NodeVisitor):
     """
@@ -109,7 +109,7 @@ class JonesComplexityChecker(object):
         sorted_items = visitor.sort()
         total_score = visitor.score()
 
-        for line, score in sorted_items.iteritems():
+        for line, score in sorted_items.items():
 
             if score > self.max_line_complexity:
                 text = self._line_error_tmpl % (int(line), int(score))
