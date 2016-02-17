@@ -10,19 +10,18 @@ def get_version(fname='jones_complexity.py'):
             if line.startswith('__version__'):
                 return eval(line.split('=')[-1])
 
-
-def get_long_description():
-    descr = []
-    for fname in ('README.rst',):
-        with open(fname) as f:
-            descr.append(f.read())
-    return '\n\n'.join(descr)
+try:
+    from pypandoc import convert
+    README = convert('README.md', 'rst')	 
+except ImportError:
+    README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+    print("warning: pypandoc module not found, could not convert Markdown to RST")
 
 setup(
     name='jones-complexity',
     version=get_version(),
     description="Jones Complexity checker, plugin for flake8",
-    long_description=get_long_description(),
+    long_description=README,
     keywords='flake8',
     author='Rich Jones',
     author_email='rich@openwatch.net',
