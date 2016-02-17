@@ -1,6 +1,6 @@
 # JonesComplexity
 
-Flake8 extension to calculate per-line complexity.
+Flake8 extension to calculate per-line complexity and total code density.
 
 ## What is this?
 
