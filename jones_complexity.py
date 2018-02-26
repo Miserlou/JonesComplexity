@@ -1,4 +1,4 @@
-""" 
+"""
     Per-Line Complexity Metrics
     Based on https://github.com/PyCQA
     MIT License.
@@ -113,7 +113,7 @@ class JonesComplexityChecker(object):
 
             if score > self.max_line_complexity:
                 text = self._line_error_tmpl % (int(line), int(score))
-                yield line, 0, text, type(self)     
+                yield line, 0, text, type(self)
 
         if total_score > self.max_jones_score:
             text = self._score_error_tmpl % (total_score)

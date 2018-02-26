@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement
 
+import os
 from setuptools import setup
 
 
@@ -12,9 +13,10 @@ def get_version(fname='jones_complexity.py'):
 
 try:
     from pypandoc import convert
-    README = convert('README.md', 'rst')	 
+    README = convert('README.md', 'rst')
 except ImportError:
-    README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+    with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
+        README = f.read()
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
 setup(
