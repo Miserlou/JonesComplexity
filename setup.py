@@ -19,13 +19,6 @@ except ImportError:
         README = f.read()
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
-
-# Requirements:
-TESTS_REQUIRE = [
-    'pytest',
-]
-
-
 setup(
     name='jones-complexity',
     version=get_version(),
