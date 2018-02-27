@@ -19,20 +19,25 @@ except ImportError:
         README = f.read()
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
+
+# Requirements:
+TESTS_REQUIRE = [
+    'pytest',
+]
+
+
 setup(
     name='jones-complexity',
     version=get_version(),
     description="Jones Complexity checker, plugin for flake8",
     long_description=README,
-    keywords='flake8',
+    keywords='flake8 pycqa complexity qa flak8-plugin',
     author='Rich Jones',
     author_email='rich@openwatch.net',
     url='https://github.com/Miserlou/JonesComplexity',
     license='Expat license',
     py_modules=['jones_complexity'],
     zip_safe=False,
-    setup_requires=['nose'],
-    tests_require=['nose'],
     entry_points={
         'flake8.extension': [
             'J901 = jones_complexity:JonesComplexityChecker',
