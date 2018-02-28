@@ -8,8 +8,5 @@ python:
 install:
   - pip install tox-travis
 
-script:
-  - tox
-
 # command to run tests
-script: pytest
+script: tox
