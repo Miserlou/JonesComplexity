@@ -3,8 +3,14 @@ import os
 import pytest
 
 
+class _CheckerOptions(object):
+    def __init__(self, line, total):
+        self.max_line_complexity = line
+        self.max_jones_score = total
+
+
 @pytest.fixture(scope='session')
-def fixture_file():
+def fixture_filename():
     """Returns path to the fixture file."""
     def _inner_fabric(filename):
         base = os.path.dirname(__file__)
@@ -14,11 +20,8 @@ def fixture_file():
 
 
 @pytest.fixture(scope='session')
-def fixture_contents(fixture_file):
-    """Returns fixture file contents."""
-    def _inner_fabric(filename):
-        full_path = fixture_file(filename)
-        with open(full_path, 'r') as f:
-            return f.read()
+def options():
+    def _inner_fabric(line, total):
+        return _CheckerOptions(line, total)
 
     return _inner_fabric
