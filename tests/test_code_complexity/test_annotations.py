@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 
 import pytest
@@ -5,8 +7,7 @@ import pytest
 from jones_complexity import calculate_complexity
 
 
-@pytest.mark.skipif(sys.version_info < (3,6),
-                    reason='Requires python3.6')
+@pytest.mark.skipif(sys.version_info < (3, 6), reason='Requires python3.6')
 @pytest.mark.parametrize('option_values,results', [
     ((1, 1), (7, 4.5)),
     ((5, 5), (3, 4.5)),
