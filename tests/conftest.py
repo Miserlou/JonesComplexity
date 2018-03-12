@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 import pytest
@@ -21,6 +23,7 @@ def fixture_filename():
 
 @pytest.fixture(scope='session')
 def options():
+    """Generates options instance."""
     def _inner_fabric(line, total):
         return _CheckerOptions(line, total)
 
