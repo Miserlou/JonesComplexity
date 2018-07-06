@@ -14,7 +14,9 @@ import optparse
 from collections import OrderedDict
 from operator import itemgetter
 
-__version__ = '0.1.2'
+import pkg_resources
+
+__version__ = pkg_resources.get_distribution('jones-complexity').version
 
 
 class LineComplexityVisitor(ast.NodeVisitor):
@@ -27,7 +29,7 @@ class LineComplexityVisitor(ast.NodeVisitor):
 
     def __init__(self, *args, **kwargs):
         """Creates instance of LineComplexityVisitor."""
-        super(LineComplexityVisitor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.count = {}
 
     def _median(self, items):
@@ -64,14 +66,14 @@ class LineComplexityVisitor(ast.NodeVisitor):
 class JonesComplexityChecker(object):
     """Jones complexity checker."""
 
-    name = 'jones'
+    name = 'jones-complexity'
     version = __version__
 
     _line_code = 'J901'
-    _line_error_tmpl = 'J901 Line {} is too complex ({})'
+    _line_error_tmpl = 'J901 Line {0} is too complex ({1})'
 
     _score_code = 'J902'
-    _score_error_tmpl = 'J902 Overall Jones score is too complex ({})'
+    _score_error_tmpl = 'J902 Overall Jones score is too complex ({0})'
 
     max_line_complexity = 0
     max_jones_score = 0
@@ -79,7 +81,7 @@ class JonesComplexityChecker(object):
     def __init__(self, tree, filename='(none)'):
         """Creates instance of JonesComplexityChecker."""
         self.tree = tree
-        self.filename = filename  # flake8==2.0 support
+        self.filename = filename
         self._score = 0
 
     @property
@@ -87,50 +89,39 @@ class JonesComplexityChecker(object):
         """Returns the final score to user."""
         return self._score
 
-    @staticmethod
-    def _register_opt(parser, *args, **kwargs):
-        """Handler to register an option for both Flake8 3.x and 2.x."""
-        try:
-            # Flake8 3.x registration
-            parser.add_option(*args, **kwargs)
-        except (optparse.OptionError, TypeError):
-            # Flake8 2.x registration
-            parse_from_config = kwargs.pop('parse_from_config', False)
-            option = parser.add_option(*args, **kwargs)
-            if parse_from_config:
-                parser.config_options.append(
-                    option.get_opt_string().lstrip('-'),
-                )
-
     @classmethod
-    def add_options(cls, parser):
+    def add_options(cls, parser, use_config=True):
         """Used by flake8 to add options."""
-        cls._register_opt(
-            parser,
+        extra_kwargs = {}
+        if use_config:
+            extra_kwargs.update({'parse_from_config': True})
+
+        parser.add_option(
             '--max-line-complexity',
             default=-1,
             action='store',
             type='int',
             help='Per line complexity threshold',
+            **extra_kwargs,
         )
-        cls._register_opt(
-            parser,
+        parser.add_option(
             '--max-jones-score',
             default=-1,
             action='store',
             type='int',
             help='Total score threshold',
+            **extra_kwargs,
         )
 
     @classmethod
-    def parse_options(cls, options):
+    def parse_options(cls, options, _extra=None):
         """Used by flake8 to parse options."""
         cls.max_line_complexity = int(options.max_line_complexity)
         cls.max_jones_score = int(options.max_jones_score)
 
     def run(self):
         """Runs the complexity check."""
-        if self.max_line_complexity < 0 or self.max_jones_score < 0:
+        if self.max_line_complexity < 0 and self.max_jones_score < 0:
             return
 
         visitor = LineComplexityVisitor()
@@ -139,20 +130,24 @@ class JonesComplexityChecker(object):
         sorted_items = visitor.sort()
         self._score = visitor.score()
 
-        for line, score in sorted_items.items():
-            if score > self.max_line_complexity:
-                text = self._line_error_tmpl.format(int(line), int(score))
-                yield int(line), 0, text, type(self)
+        if self.max_line_complexity > 0:
+            for line, score in sorted_items.items():
+                if score > self.max_line_complexity:
+                    text = self._line_error_tmpl.format(int(line), int(score))
+                    yield int(line), 0, text, type(self)
 
-        if self._score > self.max_jones_score:
+        if self.max_jones_score > 0 and self._score > self.max_jones_score:
             text = self._score_error_tmpl.format(self._score)
             yield 0, 0, text, type(self)
 
 
 def _parse_input():
     parser = optparse.OptionParser()
-    JonesComplexityChecker.add_options(parser)
+    JonesComplexityChecker.add_options(parser, use_config=False)
     options, args = parser.parse_args()
+
+    # We need a different default value for this type of invocation:
+    setattr(options, 'max_line_complexity', 1)
 
     return options, args
 
@@ -174,7 +169,7 @@ def calculate_complexity(filename, options):
 
     complexity = []
     for lineno, _, text, _ in checker.run():
-        complexity.append('{}:{}:1: {}'.format(filename, int(lineno), text))
+        complexity.append('{0}:{1}:1: {2}'.format(filename, int(lineno), text))
 
     return checker.score, complexity
 
@@ -187,7 +182,7 @@ def main():
     print('Line counts:')
     print(json.dumps(sorted_items, indent=4))
 
-    print('Jones Score: {}'.format(score))
+    print('Jones Score: {0}'.format(score))
 
 
 if __name__ == '__main__':

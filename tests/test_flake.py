@@ -35,7 +35,7 @@ def test_call_flake8_version():
         ['flake8', '--version'],
         stderr=subprocess.STDOUT,
     )
-    assert b'jones: ' in output
+    assert b'jones-complexity: ' in output
 
 
 def test_call_flake8_with_params(tmpdir):
@@ -55,5 +55,6 @@ def test_call_flake8_with_params(tmpdir):
     )
     stdout, _ = p.communicate()
 
+    print(stdout)
     assert b'J901' in stdout
     assert b'J902' in stdout

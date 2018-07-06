@@ -1,18 +1,18 @@
 language: python
+
 python:
   - 3.5
   - 3.6
 
-addons:
-  apt_packages:
-    - pandoc
-
 # command to install dependencies
 install:
-  - pip install tox-travis
+  - pip install poetry
+  - poetry install
+  - poetry develop
 
 # command to run tests
-script: tox
+script:
+  - poetry run pytest
 
 # create coverage badge
 after_success:
