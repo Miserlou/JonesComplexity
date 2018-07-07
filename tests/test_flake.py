@@ -55,6 +55,5 @@ def test_call_flake8_with_params(tmpdir):
     )
     stdout, _ = p.communicate()
 
-    print(stdout)
     assert b'J901' in stdout
     assert b'J902' in stdout

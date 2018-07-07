@@ -52,7 +52,7 @@ We support two options:
 You can provide options via:
 
 - a command line, this works for both standalone and `flake8` usages
-- `setup.cfg` and `.flake8` files, see [docs](http://flake8.pycqa.org/en/latest/user/configuration.html)
+- if using `flake8`, `setup.cfg` and `.flake8` files are supported, see [docs](http://flake8.pycqa.org/en/latest/user/configuration.html)
 
 ## Examples
 

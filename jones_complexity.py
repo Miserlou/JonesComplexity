@@ -31,6 +31,7 @@ class LineComplexityVisitor(ast.NodeVisitor):
         """Creates instance of LineComplexityVisitor."""
         super().__init__(*args, **kwargs)
         self.count = {}
+        self._to_ignore = []
 
     def _median(self, items):
         sorted_list = sorted(items)
@@ -41,11 +42,28 @@ class LineComplexityVisitor(ast.NodeVisitor):
             return sorted_list[index]
         return (sorted_list[index] + sorted_list[index + 1]) / 2.0
 
+    def _maybe_ignore_annotations(self, node):
+        """Marks node to be skiped if it is type annotation."""
+        annotation = getattr(node, 'annotation', None)
+        if annotation:
+            self._to_ignore.append(node.annotation)
+
+        if isinstance(node, ast.Name):
+            # This is an ugly hack to ignore return annotations like:
+            # def some() -> int:
+            # Because, it is impossible to get otherwise.
+            parent = getattr(node, 'parent', None)
+            if isinstance(parent, ast.FunctionDef):
+                self._to_ignore.append(node)
+
     def visit(self, node):
         """Recursively visit all the nodes and add up the instructions."""
         if hasattr(node, 'lineno'):
-            lineno = str(node.lineno)
-            self.count[lineno] = self.count.get(lineno, 0) + 1
+            self._maybe_ignore_annotations(node)
+
+            if node not in self._to_ignore:
+                lineno = str(node.lineno)
+                self.count[lineno] = self.count.get(lineno, 0) + 1
         self.generic_visit(node)
 
     def sort(self):
