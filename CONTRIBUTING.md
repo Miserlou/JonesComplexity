@@ -40,3 +40,15 @@ You can contribute by spreading a word about this library.
 It would also be a huge contribution to write
 a short article on how you are using this project.
 What are your best-practices?
+
+
+## How to release
+
+We use `poetry` to release this software.
+
+That's how you can make it happen:
+1. `poetry build`
+2. `poetry publish`
+
+Please, note that you must have an access
+to the PyPI repository to push new versions.
